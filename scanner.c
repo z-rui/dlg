@@ -122,7 +122,6 @@ void read_body(void)
 	int ch;
 
 	parser = ParseAlloc(malloc);
-	ParseTrace(stdout, "Parse: ");
 	for (;;) {
 		ch = getchar_nonEOF();
 		if (ch == '%') {
