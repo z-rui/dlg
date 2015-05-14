@@ -12,4 +12,4 @@ This is a replacement for out-dated LED that generates C code for an IUP dialog.
 
 ## Status
 
-The development has not started yet.
+This project is currently under development.
