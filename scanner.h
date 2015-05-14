@@ -1,8 +1,6 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
-#define IDBUFSIZ 20
-
 #include <stddef.h>
 extern void *ParseAlloc(void *(*)(size_t));
 extern void ParseFree(void *, void (*)(void *));

@@ -5,6 +5,8 @@
 #include <string.h>
 #include <ctype.h>
 
+#define IDBUFSIZ 20000
+
 void scanner_free(char *s)
 {
 	free(s);
@@ -62,7 +64,7 @@ char *bufdup(char buf[], int n)
 static
 void read_line(int ch, void *parser)
 {
-	char buf[IDBUFSIZ];
+	static char buf[IDBUFSIZ];
 	int bufp;
 
 	while (ch != '\n') {
