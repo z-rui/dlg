@@ -160,8 +160,9 @@ obj(A) ::= objdef(B). {
 			printf("%s", arg->value.token);
 		else
 			printf("_obj[%d]", arg->value.obj->id);
-		printf((arg->next) ? ", " : ");\n");
+		if (arg->next) printf(", ");
 	}
+	printf(");\n");
 	for (arg = A->attrs; arg; arg = arg->next) {
 		const char *token;
 
