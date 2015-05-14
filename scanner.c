@@ -89,12 +89,13 @@ void read_line(int ch, void *parser)
 
 			bufp = 0;
 			buf[bufp++] = '"';
-			while ((ch = getchar_nonEOF()) != '"' || escape) {
+			do {
 				if (bufp == IDBUFSIZ)
 					error("buffer overflow");
+				ch = getchar_nonEOF();
 				buf[bufp++] = ch;
-				escape = (ch == '\\');
-			}
+				escape = !escape && ch == '\\';
+			} while (ch != '"' || escape);
 			token = bufdup(buf, bufp);
 			Parse(parser, LITERAL, token);
 		} else if (ch == '=') {
