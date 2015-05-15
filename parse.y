@@ -127,7 +127,7 @@ body ::= body definition.
 %destructor obj {obj_free($$); }
 
 definition ::= defname EQUAL obj(A). {
-	printf("\treturn _obj[%d];\n}\n", A->id);
+	printf("\treturn _obj[%d];\n}\n\n", A->id);
 	obj_free(A);
 }
 
