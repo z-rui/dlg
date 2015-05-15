@@ -9,3 +9,8 @@ parse.c parse.h: parse.y
 
 scanner: parse.o scanner.c
 	$(CC) $(CFLAGS) -DSTANDALONE -o $@ parse.o scanner.c
+
+clean:
+	rm -f *.o parse.c parse.h parse.out
+
+.PHONY: all clean
