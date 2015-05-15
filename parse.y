@@ -3,25 +3,25 @@
 #include "scanner.h"
 #include "gen.h"
 
-struct arglist_aux {
+struct arg_aux {
 	struct arglist *head, *tail;
 };
 
 static
-struct arglist *arglist_close(struct arglist_aux *aux)
+struct arglist *arg_close(struct arg_aux *aux)
 {
 	if (aux->tail) aux->tail->next = 0;
 	return aux->head;
 }
 
 static
-void arglist_open(struct arglist_aux *aux, struct arglist *firstarg)
+void arg_open(struct arg_aux *aux, struct arglist *firstarg)
 {
 	aux->head = aux->tail = firstarg;
 }
 
 static
-void arglist_append(struct arglist_aux *aux, struct arglist *item)
+void arg_append(struct arg_aux *aux, struct arglist *item)
 {
 	assert(item);
 	if (aux->tail) {
@@ -61,57 +61,58 @@ defname ::= NAME(A). {
 
 /* these are by-value objects, no need to be freed.
  * BUT the entries stored in need to be freed. */
-%type attrlist {struct arglist_aux}
+%type attrlist {struct arg_aux}
 %destructor attrlist { arglist_free($$.head); }
-%type arglist {struct arglist_aux}
+%type arglist {struct arg_aux}
 %destructor arglist { arglist_free($$.head); }
-%type attr_prefix {struct arglist_aux}
+%type attr_prefix {struct arg_aux}
 %destructor attr_prefix { arglist_free($$.head); }
+%type objargs {struct {struct arglist *args, *attrs;}}
+%destructor objargs { arglist_free($$.args); arglist_free($$.attrs); }
 
-obj(A) ::= objdef(B). {
-	A = B;
+obj(A) ::= NAME(B) objargs(C). {
+	A = new_obj(B, C.args, C.attrs);
 	if (parse_current_id == MAXID)
 		printf("warning: too many children\n");
 	gen_obj(A, parse_current_id++);
 }
 
-%type objdef {struct obj *}
-%destructor objdef {obj_free($$); }
-
-objdef(A) ::= NAME(B) LBRACE RBRACE. {
-	A = new_obj(B, 0, 0);
+objargs(A) ::= LBRACE RBRACE. {
+	A.args = A.attrs = 0;
 }
-objdef(A) ::= NAME(B) LBRACE arglist(C) RBRACE. {
-	A = new_obj(B, arglist_close(&C), 0);
+objargs(A) ::= LBRACE arglist(B) RBRACE. {
+	A.args = arg_close(&B);
+	A.attrs = 0;
 }
-objdef(A) ::= NAME(B) LBRACE attr_prefix(C) attrlist(D) RBRACE. {
-	A = new_obj(B, arglist_close(&C), arglist_close(&D));
+objargs(A) ::= LBRACE attr_prefix(B) attrlist(C) RBRACE. {
+	A.args = arg_close(&B);
+	A.attrs = arg_close(&C);
 }
 
 attr_prefix(A) ::= SEMI. {
-	arglist_open(&A, 0);
+	arg_open(&A, 0);
 }
 attr_prefix(A) ::= arglist(B) SEMI. {
 	A = B;
 }
 
 arglist(A) ::= expr(E). {
-	arglist_open(&A, new_arg(0, &E));
+	arg_open(&A, new_arg(0, &E));
 }
 arglist(A) ::= arglist(B) COMMA expr(E). {
 	A = B;
-	arglist_append(&A, new_arg(0, &E));
+	arg_append(&A, new_arg(0, &E));
 }
 
 %type attr {struct arglist *}
 %destructor attr {arglist_free($$); }
 
 attrlist(A) ::= attr(B). {
-	arglist_open(&A, B);
+	arg_open(&A, B);
 }
 attrlist(A) ::= attrlist(B) COMMA attr(C). {
 	A = B;
-	arglist_append(&A, C);
+	arg_append(&A, C);
 }
 
 %type expr {struct parse_expr}
