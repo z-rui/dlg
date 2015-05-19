@@ -90,6 +90,9 @@ objargs(A) ::= LBRACE attr_prefix(B) attrlist(C) RBRACE. {
 	A.attrs = arg_close(&C);
 }
 
+attr_prefix(A) ::= . {
+	arg_open(&A, 0);
+}
 attr_prefix(A) ::= SEMI. {
 	arg_open(&A, 0);
 }
