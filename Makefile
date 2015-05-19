@@ -1,16 +1,20 @@
 CC=gcc
 CFLAGS=-Wall -g
 YACC=lemon
+LEX=flex
 
-all: scanner
+all: scan
 
 parse.c parse.h: parse.y
 	$(YACC) parse.y
 
-scanner: parse.o gen.o scanner.c
-	$(CC) $(CFLAGS) -DSTANDALONE -o $@ parse.o gen.o scanner.c
+scan: parse.o gen.o scan.c
+	$(CC) $(CFLAGS) -DSTANDALONE -o $@ parse.o gen.o scan.c
+
+scan.c: scan.l
+	$(LEX) -o $@ $<
 
 clean:
-	rm -f *.o parse.c parse.h parse.out
+	rm -f *.o parse.c parse.h parse.out scan.c
 
 .PHONY: all clean

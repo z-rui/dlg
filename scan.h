@@ -1,5 +1,5 @@
-#ifndef SCANNER_H
-#define SCANNER_H
+#ifndef SCAN_H
+#define SCAN_H
 
 #include <stddef.h>
 extern void *ParseAlloc(void *(*)(size_t));
@@ -11,5 +11,5 @@ extern void Parse(void *, int, char *);
 extern void ParseTrace(FILE *, char *);
 #endif
 
-extern void scanner_free(char *);
+extern void scan_free(char *);
 #endif

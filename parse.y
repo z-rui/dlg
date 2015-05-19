@@ -1,6 +1,6 @@
 %include {
 #include <assert.h>
-#include "scanner.h"
+#include "scan.h"
 #include "gen.h"
 
 struct arg_aux {
@@ -37,12 +37,13 @@ int parse_current_id;
 } /* %include */
 
 %token_type{char *}
-%token_destructor{ scanner_free($$); }
+%token_destructor{ scan_free($$); }
 
 input ::= body.
 
 body ::=.
 body ::= body definition. 
+body ::= body RAW_BLOCK.
 
 %type obj {struct obj *}
 %destructor obj {obj_free($$); }
@@ -55,7 +56,7 @@ definition ::= defname EQUAL obj(A). {
 defname ::= NAME(A). {
 	printf("Ihandle *%s(void)\n{\n", A);
 	printf("\tIhandle *_obj[%d];\n\n", MAXID);
-	scanner_free(A);
+	scan_free(A);
 	parse_current_id = 0;
 }
 

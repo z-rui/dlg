@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "scanner.h"
+#include "scan.h"
 #include "gen.h"
 
 struct obj *new_obj(char *objclass, struct arglist *args, struct arglist *attrs)
@@ -32,7 +32,7 @@ void arglist_free(struct arglist *a)
 	struct arglist *next;
 
 	while (a) {
-		scanner_free(a->attrname);
+		scan_free(a->attrname);
 		parse_expr_free(&a->value);
 		next = a->next;
 		free(a);
@@ -42,7 +42,7 @@ void arglist_free(struct arglist *a)
 
 void obj_free(struct obj *c)
 {
-	scanner_free(c->objclass);
+	scan_free(c->objclass);
 	arglist_free(c->args);
 	arglist_free(c->attrs);
 	free(c);
@@ -51,7 +51,7 @@ void obj_free(struct obj *c)
 void parse_expr_free(const struct parse_expr *expr)
 {
 	if (expr->token)
-		scanner_free(expr->token);
+		scan_free(expr->token);
 	else
 		obj_free(expr->obj);
 }
