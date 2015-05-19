@@ -47,7 +47,6 @@ input ::= body.
 
 body ::=.
 body ::= body definition. 
-body ::= body RAW_BLOCK.
 
 %type obj {struct obj *}
 %destructor obj {obj_free($$); }
