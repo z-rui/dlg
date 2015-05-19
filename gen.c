@@ -8,6 +8,7 @@
 #define IUP_VARARG 0
 #define IUP_NOVARARG ""
 
+static
 struct {
 	const char *proper_case;
 	const char *arginfo;
