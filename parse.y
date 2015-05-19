@@ -71,7 +71,7 @@ defname ::= NAME(A). {
 %type objargs {struct {struct arglist *args, *attrs;}}
 %destructor objargs { arglist_free($$.args); arglist_free($$.attrs); }
 
-obj(A) ::= NAME(B) objargs(C). {
+obj(A) ::= IUPNAME(B) objargs(C). {
 	A = new_obj(B, C.args, C.attrs);
 	if (parse_current_id == MAXID)
 		printf("warning: too many children\n");
