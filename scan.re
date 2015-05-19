@@ -133,16 +133,6 @@ void scan_free(struct token token)
 	(void) token; /* nothing to do! */
 }
 
-char *bufdup(const char *s, size_t n)
-{
-	char *t;
-
-	t = malloc(n + 1);
-	memcpy(t, s, n);
-	t[n] = 0;
-	return t;
-}
-
 static
 void read_body(void)
 {
