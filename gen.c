@@ -87,22 +87,22 @@ struct {
 };
 
 static
-int stricmp(const char *s, const char *t)
+int strcmp_lower_vs_anycase(const char *s, const char *t)
 {
 	int diff;
 
-	while ((diff = tolower(*s) - tolower(*t)) == 0 && *s)
+	while ((diff = *s - tolower(*t)) == 0 && *s)
 		s++, t++;
 	return diff;
 }
 
-static
 void get_control_info(const char *token, const char **proper_case, const char **arginfo)
 {
 	int i;
 
 	for (i = 0; control_info[i].proper_case; i++) {
-		if (stricmp(control_info[i].proper_case, token) == 0)
+		/* we know that token is all lower case */
+		if (strcmp_lower_vs_anycase(token, control_info[i].proper_case) == 0)
 			break;
 	}
 	*proper_case = control_info[i].proper_case;
@@ -168,6 +168,9 @@ void gen_obj(struct obj *o, int id)
 
 	o->id = id;
 	get_control_info(o->objclass, &proper_case, &arginfo);
+	if (!proper_case) {
+		fprintf(stderr, "warning: unknown control '%s'\n", o->objclass);
+	}
 	assert(proper_case);
 	printf("\t_obj[%d] = Iup%s(",
 		o->id,

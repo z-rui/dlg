@@ -18,6 +18,7 @@ struct obj {
 	struct arglist *args, *attrs;
 };
 
+extern void get_control_info(const char *, const char **, const char **);
 extern struct obj *new_obj(char *, struct arglist *, struct arglist *);
 extern struct arglist *new_arg(char *, const struct parse_expr *);
 extern void arglist_free(struct arglist *);
