@@ -31,80 +31,80 @@ INTEGER	[0-9]+
 
 <line>&{IDENT}	return CALLBACK;
 
-<line>image	return IUPNAME;
-<line>imagergb	return IUPNAME;
-<line>imagergba	return IUPNAME;
-<line>timer	return IUPNAME;
-<line>user	return IUPNAME;
-<line>button	return IUPNAME;
-<line>canvas	return IUPNAME;
-<line>dialog	return IUPNAME;
-<line>fill	return IUPNAME;
-<line>filedlg	return IUPNAME;
-<line>messagedlg	return IUPNAME;
-<line>colordlg	return IUPNAME;
-<line>fontdlg	return IUPNAME;
-<line>progressbar	return IUPNAME;
-<line>frame	return IUPNAME;
-<line>hbox	return IUPNAME;
-<line>item	return IUPNAME;
-<line>label	return IUPNAME;
-<line>list	return IUPNAME;
-<line>sbox	return IUPNAME;
-<line>scrollbox	return IUPNAME;
-<line>detachbox	return IUPNAME;
-<line>backgroundbox	return IUPNAME;
-<line>expander	return IUPNAME;
-<line>menu	return IUPNAME;
-<line>multiline	return IUPNAME;
-<line>radio	return IUPNAME;
-<line>separator	return IUPNAME;
-<line>submenu	return IUPNAME;
-<line>text	return IUPNAME;
-<line>val	return IUPNAME;
-<line>tree	return IUPNAME;
-<line>tabs	return IUPNAME;
-<line>toggle	return IUPNAME;
-<line>vbox	return IUPNAME;
-<line>zbox	return IUPNAME;
-<line>gridbox	return IUPNAME;
-<line>normalizer	return IUPNAME;
-<line>link	return IUPNAME;
-<line>cbox	return IUPNAME;
-<line>spin	return IUPNAME;
-<line>spinbox	return IUPNAME;
-<line>split	return IUPNAME;
-<line>cells	return IUPNAME;
-<line>gauge	return IUPNAME;
-<line>colorbar	return IUPNAME;
-<line>colorbrowser	return IUPNAME;
-<line>dial	return IUPNAME;
-<line>matrix	return IUPNAME;
-<line>matrixlist	return IUPNAME;
-<line>glcanvas	return IUPNAME;
-<line>matrixex	return IUPNAME;
-<line>olecontrol	return IUPNAME;
-<line>plot	return IUPNAME;
-<line>pplot	return IUPNAME;
-<line>mglplot	return IUPNAME;
-<line>scintilla	return IUPNAME;
-<line>webbrowser	return IUPNAME;
-<line>glcanvasbox	return IUPNAME;
-<line>glsubcanvas	return IUPNAME;
-<line>gllabel	return IUPNAME;
-<line>glseparator	return IUPNAME;
-<line>glbutton	return IUPNAME;
-<line>gltoggle	return IUPNAME;
-<line>glprogressbar	return IUPNAME;
-<line>glval	return IUPNAME;
-<line>gllink	return IUPNAME;
-<line>glframe	return IUPNAME;
-<line>glexpander	return IUPNAME;
-<line>glscrollbox	return IUPNAME;
+<line>image	|
+<line>imagergb	|
+<line>imagergba	|
+<line>timer	|
+<line>user	|
+<line>button	|
+<line>canvas	|
+<line>dialog	|
+<line>fill	|
+<line>filedlg	|
+<line>messagedlg	|
+<line>colordlg	|
+<line>fontdlg	|
+<line>progressbar	|
+<line>frame	|
+<line>hbox	|
+<line>item	|
+<line>label	|
+<line>list	|
+<line>sbox	|
+<line>scrollbox	|
+<line>detachbox	|
+<line>backgroundbox	|
+<line>expander	|
+<line>menu	|
+<line>multiline	|
+<line>radio	|
+<line>separator	|
+<line>submenu	|
+<line>text	|
+<line>val	|
+<line>tree	|
+<line>tabs	|
+<line>toggle	|
+<line>vbox	|
+<line>zbox	|
+<line>gridbox	|
+<line>normalizer	|
+<line>link	|
+<line>cbox	|
+<line>spin	|
+<line>spinbox	|
+<line>split	|
+<line>cells	|
+<line>gauge	|
+<line>colorbar	|
+<line>colorbrowser	|
+<line>dial	|
+<line>matrix	|
+<line>matrixlist	|
+<line>glcanvas	|
+<line>matrixex	|
+<line>olecontrol	|
+<line>plot	|
+<line>pplot	|
+<line>mglplot	|
+<line>scintilla	|
+<line>webbrowser	|
+<line>glcanvasbox	|
+<line>glsubcanvas	|
+<line>gllabel	|
+<line>glseparator	|
+<line>glbutton	|
+<line>gltoggle	|
+<line>glprogressbar	|
+<line>glval	|
+<line>gllink	|
+<line>glframe	|
+<line>glexpander	|
+<line>glscrollbox	|
 <line>glsizebox	return IUPNAME;
 
 <line>{IDENT}	return NAME;
-<line>{INTEGER} return LITERAL;
+<line>{INTEGER}	return LITERAL;
 
 <line>"="	return EQUAL;
 <line>"{"	return LBRACE;
