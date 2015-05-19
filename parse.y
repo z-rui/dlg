@@ -32,11 +32,15 @@ void arg_append(struct arg_aux *aux, struct arglist *item)
 }
 
 #define MAXID 200
+static
 int parse_current_id;
+
+static
+struct token null_token;
 
 } /* %include */
 
-%token_type{char *}
+%token_type{struct token}
 %token_destructor{ scan_free($$); }
 
 input ::= body.
@@ -54,7 +58,9 @@ definition ::= defname EQUAL obj(A). {
 }
 
 defname ::= NAME(A). {
-	printf("Ihandle *%s(void)\n{\n", A);
+	printf("Ihandle *");
+	print_token(A);
+	printf("(void)\n{\n");
 	printf("\tIhandle *_obj[%d];\n\n", MAXID);
 	scan_free(A);
 	parse_current_id = 0;
@@ -101,11 +107,11 @@ attr_prefix(A) ::= arglist(B) SEMI. {
 }
 
 arglist(A) ::= expr(E). {
-	arg_open(&A, new_arg(0, &E));
+	arg_open(&A, new_arg(null_token, &E));
 }
 arglist(A) ::= arglist(B) COMMA expr(E). {
 	A = B;
-	arg_append(&A, new_arg(0, &E));
+	arg_append(&A, new_arg(null_token, &E));
 }
 
 %type attr {struct arglist *}
@@ -133,6 +139,6 @@ expr(A) ::= CALLBACK(B). {
 	A.token = B;
 }
 expr(A) ::= obj(B). {
-	A.token = 0;
+	A.token = null_token;
 	A.obj = B;
 }

@@ -69,12 +69,10 @@ line:
 	[\t\r\v ]	{ goto line; }
 	["]	{ goto str; }
 	IDENT	{
-		char savech = *YYCURSOR;
+		struct token token = { *save, YYCURSOR - *save };
 		const char *p, *q;
 
-		*YYCURSOR = 0;	// set temp end
-		get_control_info(*save, &p, &q);
-		*YYCURSOR = savech; // restore
+		get_control_info(token, &p, &q);
 		if (p)
 			return IUPNAME;
 		return NAME;
@@ -130,9 +128,9 @@ void load_buffer(void)
 	buffer[len] = '\0';
 }
 
-void scan_free(char *s)
+void scan_free(struct token token)
 {
-	free(s);
+	(void) token; /* nothing to do! */
 }
 
 char *bufdup(const char *s, size_t n)
@@ -149,15 +147,20 @@ static
 void read_body(void)
 {
 	void *parser;
-	int state, token;
+	int state, major;
 	char *save;
 
 	parser = ParseAlloc(malloc);
+	//ParseTrace(stderr, "Parse: ");
 	state = 0;
 	do {
-		token = next_token(&save, &state);
-		Parse(parser, token, bufdup(save, YYCURSOR - save));
-	} while (token);
+		struct token minor;
+
+		major = next_token(&save, &state);
+		minor.str = save;
+		minor.length = YYCURSOR - save;
+		Parse(parser, major, minor);
+	} while (major);
 	ParseFree(parser, free);
 }
 
