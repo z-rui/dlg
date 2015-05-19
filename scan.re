@@ -35,14 +35,20 @@ void read_header(void)
 initial:
 	save = YYCURSOR;
 /*!re2c
-	"%%"	{ return; }
-	[^]	{ YYCURSOR = save; goto line; }
+"%%"	{ return; }
+[^]	{ YYCURSOR = save; goto line; }
 */
 line:
 	save = YYCURSOR;
 /*!re2c
-	EOF	{ error(0); }
-	[^]	{ putchar(*save); if (*save == '\n') goto initial; else goto line; }
+EOF	{ error(0); }
+[^]	{
+	putchar(*save);
+	if (*save == '\n')
+		goto initial;
+	else
+		goto line;
+}
 */
 }
 
@@ -57,43 +63,43 @@ initial:
 	*save = YYCURSOR;
 	*state = 0;
 /*!re2c
-	"%%"	{ return 0; }
-	[^]	{ YYCURSOR = *save; goto line; }
+"%%"	{ return 0; }
+[^]	{ YYCURSOR = *save; goto line; }
 */
 line:
 	*save = YYCURSOR;
 	*state = 1;
 /*!re2c
-	EOF	{ error(0); }
-	"\n"	{ goto initial; }
-	[\t\r\v ]	{ goto line; }
-	["]	{ goto str; }
-	IDENT	{
-		struct token token = { *save, YYCURSOR - *save };
-		const char *p, *q;
+EOF	{ error(0); }
+"\n"	{ goto initial; }
+[\t\r\v ]	{ goto line; }
+["]	{ goto str; }
+IDENT	{
+	struct token token = { *save, YYCURSOR - *save };
+	const char *p, *q;
 
-		get_control_info(token, &p, &q);
-		if (p)
-			return IUPNAME;
-		return NAME;
-	}
-	INTEGER	{ return LITERAL; }
-	"&" IDENT	{ return CALLBACK; }
-	"="	{ return EQUAL; }
-	"{"	{ return LBRACE; }
-	"}"	{ return RBRACE; }
-	";"	{ return SEMI; }
-	","	{ return COMMA; }
-	[^]	{ error(*save); }
+	get_control_info(token, &p, &q);
+	if (p)
+		return IUPNAME;
+	return NAME;
+}
+INTEGER	{ return LITERAL; }
+"&" IDENT	{ return CALLBACK; }
+"="	{ return EQUAL; }
+"{"	{ return LBRACE; }
+"}"	{ return RBRACE; }
+";"	{ return SEMI; }
+","	{ return COMMA; }
+[^]	{ error(*save); }
 */
 str:
 	/* no save (lexeme accumulates) */
 	/* no state (never yields within this state) */
 /*!re2c
-	EOF	{ error(0); }
-	"\\\""	{ goto str; }
-	["]	{ return LITERAL; }
-	[^]	{ goto str; }
+EOF	{ error(0); }
+"\\\""	{ goto str; }
+["]	{ return LITERAL; }
+[^]	{ goto str; }
 */
 }
 
