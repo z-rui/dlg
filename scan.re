@@ -12,9 +12,10 @@ static char *YYCURSOR, *YYLIMIT, *YYMARKER;
 re2c:define:YYCTYPE = char;
 re2c:yyfill:enable = 0;
 
-EOF = "\000";
-IDENT = [_A-Za-z][_A-Za-z0-9]+;
-INTEGER = [0-9]+;
+EOF	= "\000";
+IDENT	= [_A-Za-z][_A-Za-z0-9]+;
+INTEGER	= [0-9]+;
+BLANK	= [\t\r\v ]+;
 
 */
 
@@ -71,8 +72,8 @@ line:
 	*state = 1;
 /*!re2c
 EOF	{ error(0); }
+BLANK	{ goto line; }
 "\n"	{ goto initial; }
-[\t\r\v ]	{ goto line; }
 "\""	{ goto str; }
 IDENT	{
 	struct token token = { *save, YYCURSOR - *save };
