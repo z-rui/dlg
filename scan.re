@@ -73,7 +73,7 @@ line:
 EOF	{ error(0); }
 "\n"	{ goto initial; }
 [\t\r\v ]	{ goto line; }
-["]	{ goto str; }
+"\""	{ goto str; }
 IDENT	{
 	struct token token = { *save, YYCURSOR - *save };
 	const char *p, *q;
@@ -98,7 +98,7 @@ str:
 /*!re2c
 EOF	{ error(0); }
 "\\\""	{ goto str; }
-["]	{ return LITERAL; }
+"\""	{ return LITERAL; }
 [^]	{ goto str; }
 */
 }
