@@ -13,9 +13,11 @@ re2c:define:YYCTYPE = char;
 re2c:yyfill:enable = 0;
 
 EOF	= "\000";
+ANY	= [^] \ EOF;
 IDENT	= [_A-Za-z][_A-Za-z0-9]+;
 INTEGER	= [0-9]+;
 BLANK	= [\t\r\v ]+;
+STRING	= "\"" ([^\\\"] | "\\"ANY)* "\"";
 
 */
 
@@ -37,13 +39,13 @@ initial:
 	save = YYCURSOR;
 /*!re2c
 "%%"	{ return; }
-[^]	{ YYCURSOR = save; goto line; }
+ANY	{ YYCURSOR = save; goto line; }
 */
 line:
 	save = YYCURSOR;
 /*!re2c
 EOF	{ error(0); }
-[^]	{
+ANY	{
 	putchar(*save);
 	if (*save == '\n')
 		goto initial;
@@ -65,7 +67,7 @@ initial:
 	*state = 0;
 /*!re2c
 "%%"	{ return 0; }
-[^]	{ YYCURSOR = *save; goto line; }
+ANY	{ YYCURSOR = *save; goto line; }
 */
 line:
 	*save = YYCURSOR;
@@ -74,7 +76,7 @@ line:
 EOF	{ error(0); }
 BLANK	{ goto line; }
 "\n"	{ goto initial; }
-"\""	{ goto str; }
+STRING	{ return LITERAL; }
 IDENT	{
 	struct token token = { *save, YYCURSOR - *save };
 	const char *p, *q;
@@ -91,16 +93,7 @@ INTEGER	{ return LITERAL; }
 "}"	{ return RBRACE; }
 ";"	{ return SEMI; }
 ","	{ return COMMA; }
-[^]	{ error(*save); }
-*/
-str:
-	/* no save (lexeme accumulates) */
-	/* no state (never yields within this state) */
-/*!re2c
-EOF	{ error(0); }
-"\\\""	{ goto str; }
-"\""	{ return LITERAL; }
-[^]	{ goto str; }
+ANY	{ error(*save); }
 */
 }
 
@@ -111,8 +104,8 @@ void read_footer(void)
 initial:
 	ch = *YYCURSOR;
 /*!re2c
-	EOF	{ return; }
-	[^]	{ putchar(ch); goto initial; }
+EOF	{ return; }
+ANY	{ putchar(ch); goto initial; }
 */
 }
 
