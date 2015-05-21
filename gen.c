@@ -88,29 +88,34 @@ struct {
 };
 
 static
-int stricmp(const char *s, const char *t)
+int strncmp_lower_vs_anycase(const char *s, const char *t, size_t n)
 {
 	int diff;
 
-	while ((diff = tolower(*s) - tolower(*t)) == 0 && *s)
+	while (n-- > 0 && (diff = *s - tolower(*t)) == 0 && *s)
 		s++, t++;
 	return diff;
 }
 
-static
-void get_control_info(const char *token, const char **proper_case, const char **arginfo)
+void print_token(struct token token)
+{
+	printf("%.*s", (int) token.length, token.str);
+}
+
+void get_control_info(struct token token, const char **proper_case, const char **arginfo)
 {
 	int i;
 
 	for (i = 0; control_info[i].proper_case; i++) {
-		if (stricmp(control_info[i].proper_case, token) == 0)
+		/* we know that token is all lower case */
+		if (strncmp_lower_vs_anycase(token.str, control_info[i].proper_case, token.length) == 0)
 			break;
 	}
 	*proper_case = control_info[i].proper_case;
 	*arginfo = control_info[i].arginfo;
 }
 
-struct obj *new_obj(char *objclass, struct arglist *args, struct arglist *attrs)
+struct obj *new_obj(struct token objclass, struct arglist *args, struct arglist *attrs)
 {
 	struct obj *c;
 
@@ -121,7 +126,7 @@ struct obj *new_obj(char *objclass, struct arglist *args, struct arglist *attrs)
 	return c;
 }
 
-struct arglist *new_arg(char *attrname, const struct parse_expr *expr)
+struct arglist *new_arg(struct token attrname, const struct parse_expr *expr)
 {
 	struct arglist *arg;
 
@@ -156,7 +161,7 @@ void obj_free(struct obj *c)
 
 void parse_expr_free(const struct parse_expr *expr)
 {
-	if (expr->token)
+	if (expr->token.str)
 		scan_free(expr->token);
 	else
 		obj_free(expr->obj);
@@ -169,13 +174,16 @@ void gen_obj(struct obj *o, int id)
 
 	o->id = id;
 	get_control_info(o->objclass, &proper_case, &arginfo);
+	if (!proper_case) {
+		fprintf(stderr, "warning: unknown control '%.*s'\n", (int) o->objclass.length, o->objclass.str);
+	}
 	assert(proper_case);
 	printf("\t_obj[%d] = Iup%s(",
 		o->id,
 		proper_case);
 	for (arg = o->args; arg; arg = arg->next) {
-		if (arg->value.token)
-			printf("%s", arg->value.token);
+		if (arg->value.token.str)
+			print_token(arg->value.token);
 		else
 			printf("_obj[%d]", arg->value.obj->id);
 		if (arg->next) printf(", ");
@@ -184,22 +192,25 @@ void gen_obj(struct obj *o, int id)
 		printf(", 0");
 	printf(");\n");
 	for (arg = o->attrs; arg; arg = arg->next) {
-		const char *token;
+		struct token token;
 
 		printf("\t");
 		token = arg->value.token;
-		if (token) {
-			printf("IupSet%s(_obj[%d], \"%s\", ",
-				(token[0] == '&') ? "Callback" : "Attribute",
-				o->id,
-				arg->attrname);
-			printf((token[0] == '&' || token[0] == '"') ? "%s);\n" : "\"%s\");\n",
-				token);
+		if (token.str) {
+			char startch;
+
+			startch = token.str[0];
+			printf("IupSet%s(_obj[%d], \"",
+				(startch == '&') ? "Callback" : "Attribute",
+				o->id);
+			print_token(arg->attrname);
+			printf("\", ");
+			print_token(token);
+			printf(");\n");
 		} else {
-			printf("IupSetAttributeHandle(_obj[%d], \"%s\", _obj[%d]);\n",
-				o->id,
-				arg->attrname,
-				arg->value.obj->id);
+			printf("IupSetAttributeHandle(_obj[%d], \"", o->id);
+			print_token(arg->attrname);
+			printf("\", _obj[%d]);\n", arg->value.obj->id);
 		}
 	}
 	printf("\n");
